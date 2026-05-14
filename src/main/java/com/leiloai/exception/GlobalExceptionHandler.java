@@ -22,8 +22,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // --- Exceções de autenticação ---
-
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError> handleBadCredentials(
             BadCredentialsException ex, HttpServletRequest request) {
@@ -50,8 +48,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
     }
 
-    // --- Exceção de autorização ---
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ApiError> handleAccessDenied(
             AccessDeniedException ex, HttpServletRequest request) {
@@ -64,8 +60,6 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiError);
     }
-
-    // --- Exceção customizada ---
 
     @ExceptionHandler(AuctionNotFoundException.class)
     public ResponseEntity<ApiError> handleAuctionNotFound(
@@ -91,8 +85,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiError);
     }
 
-    // --- Validação de campos (Bean Validation) ---
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(
             MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -112,23 +104,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 
-    // --- Erros inesperados (catch-all) ---
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleGenericException(
-            Exception ex, HttpServletRequest request) {
-        log.error("Erro inesperado: ", ex);
-        ApiError apiError = new ApiError(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Server Error",
-                "Ocorreu um erro inesperado. Tente novamente mais tarde.",
-                request.getRequestURI()
-        );
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
-    }
-
-    // --- IllegalArgumentException (validações de negócio) ---
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(
             IllegalArgumentException ex, HttpServletRequest request) {
@@ -140,5 +115,18 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleGenericException(
+            Exception ex, HttpServletRequest request) {
+        log.error("Erro inesperado: ", ex);
+        ApiError apiError = new ApiError(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error",
+                ex.getMessage() + " - " + ex.getClass().getSimpleName(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiError);
     }
 }
