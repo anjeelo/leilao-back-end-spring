@@ -1,0 +1,14 @@
+### Credenciais — NUNCA subir ###
+src/main/resources/application.properties
+
+### Uploads locais ###
+uploads/
+
+### Boa prática ###
+.env
+.env.local
+*.env
+
+### IntelliJ — credenciais locais de banco ###
+.idea/dataSources.local.xml
+.idea/dataSources/
